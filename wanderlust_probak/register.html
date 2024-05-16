@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://kit.fontawesome.com/671e0cb2b6.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <section id="home-logo">
+                <a href="/">
+                    <img id="logo" src="images/Wanderlust_logo.png" alt="">
+                </a>
+            </section>
+            <section id="menu-section">
+                <ul>
+                    <li>
+                        <a href="/">Hasiera</a>
+                    </li>
+                    <li>
+                        <a href="/ikuspegia">Ikuspegia</a>
+                    </li>
+                    <li>
+                        <a href="/chat">Chat</a>
+                    </li>
+                    <li>
+                        <a href="/about.html">About</a>
+                    </li>
+                </ul>
+            </section>
+            <section id="icons-section">
+                <ul>
+                    <li>
+                        <a href="">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/login.html">
+                            <i class="fa-solid fa-user"></i>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </nav>
+    </header>
+    <main>
+        <section class="container">
+            <div class="card-shadow">
+                <div class="divider"></div>
+                <div class="card-register">
+                    <h2 class="form-title">SORTU KONTUA</h2>
+                    <form id="register-form" th:action="@{/register}" method="post">
+                        <div id="register-div">
+                            <div class="input-group" id="name-group">
+                                <label for="name">Izena</label>
+                                <input type="text" name="name" id="name" required>
+                            </div>
+                            <div class="input-group" id="surname-group">
+                                <label for="surname">Abizena</label>
+                                <input type="text" name="surname" id="surname" required>
+                            </div>
+                            <div class="input-group" id="username-group">
+                                <label for="username">Erabiltzaile izena</label>
+                                <input type="text" name="username" id="username-register" required>
+                            </div>
+                            <div class="input-group" id="age-group">
+                                <label for="age">Adina</label>
+                                <input type="number" name="age" id="age" required>
+                            </div>
+                            <div class="input-group" id="mail-group">
+                                <label for="mail">Posta elektronikoa</label>
+                                <input type="email" name="mail" id="mail" required>
+                            </div>
+                            <div class="input-group" id="password-group">
+                                <label for="password">Pasahitza</label>
+                                <input type="password" name="password" id="password-register" required>
+                            </div>
+                            <div class="input-group" id="password-reply-group">
+                                <label for="password_reply">Pasahitza errepikatu</label>
+                                <input type="password" name="password_reply" id="password_reply" required>
+                            </div>
+                            <div class="input-group" id="country-group">
+                                <label for="country">Herrialdea</label>
+                                <select name="herrialdea" id="herrialdea">
+                                    <option th:each="herrialdea : ${herrialdeak}" th:value="${herrialdea.herrialdea}" th:text="${herrialdea.herrialdea}"></option>
+                                </select>
+                            </div>
+                            <div class="input-group" id="languages-group">
+                                <label for="languages">Hizkuntzak</label>
+                                <select type="text" class="form-control" name="hizkuntzak" multiple="multiple" id="language">
+                                    <option th:each="hizkuntza : ${hizkuntzak}" th:value="${hizkuntza.hizkuntza}" th:text="${hizkuntza.hizkuntza}"></option>
+                                </select>
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#language').select2({
+                                            tags: true
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                        <button type="submit" id="button-register">Sortu kontua</button>
+                        <button class="exit" id="button-exit-register">Utzi</button>
+                    </form>
+
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+<footer>
+    <div class="footer-title">
+        <p>
+            <strong>Wanderlust® 2024</strong>
+        </p>
+    </div>
+    <div class="">
+        <a class="" href="dokumentuak/TÉRMINOS DE USO.pdf">
+            Privacy&amp;Legal &nbsp;&nbsp;
+        </a>
+        <a class="">Contacto</a>
+    </div>
+    <div class="redes">
+        <a href="https://www.instagram.com/">
+            <i class="fa-brands fa-instagram" style="color:black" aria-hidden="true"></i>
+        </a>
+        <a href="https://www.tiktok.com/">
+            <i class="fa-brands fa-tiktok" style="color:black" aria-hidden="true"></i>
+        </a>
+        <a href="https://www.twitter.com/">
+            <i class="fa-brands fa-twitter" style="color:black" aria-hidden="true"></i>
+        </a>
+        <a href="https://www.facebook.com/">
+            <i class="fa-brands fa-facebook" style="color:black" aria-hidden="true"></i>
+        </a>
+    </div>
+</footer>
+
+</html>

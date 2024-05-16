@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://kit.fontawesome.com/671e0cb2b6.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <section id="home-logo">
+                <a href="/">
+                    <img id="logo" src="images/Wanderlust_logo.png" alt="">
+                </a>
+            </section>
+            <section id="menu-section">
+                <ul>
+                    <li>
+                        <a href="/">Hasiera</a>
+                    </li>
+                    <li>
+                        <a href="/ikuspegia">Ikuspegia</a>
+                    </li>
+                    <li>
+                        <a href="/chat">Chat</a>
+                    </li>
+                    <li class="active">
+                        <a href="/about.html">Gu</a>
+                    </li>
+                </ul>
+            </section>
+            <section id="icons-section">
+                <ul>
+                    <li>
+                        <a href="">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/login.html">
+                            <i class="fa-solid fa-user"></i>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </nav>
+    </header>
+    <section class="aboutus-container">
+        <h2>NOR GAREN</h2>
+    </section>
+    <section class="aboutus-container light">
+        <h2>NOLA EGITEN DUGU</h2>
+    </section>
+    <section class="aboutus-container">
+        <h2>ERABILTZAILE EZBERDINAK</h2>
+        <div class="erabiltzaileen-taula">
+            <div class="erabiltzaileen-taula-zutabe">
+                <div class="erabiltzaileen-taula-karratua erabiltzaileen-taula-karratua-header"></div>
+                <div class="erabiltzaileen-taula-karratua"><strong>Oinarrizko informazioa herrialdeko</strong>Mapan
+                    herrialde batean klik egitean honen informazio orokorraren ikuspena</div>
+                <div class="erabiltzaileen-taula-karratua"><strong>Informazio detailatua herrialdeko</strong>Mapan herrialde
+                    batean klik egitean honen informazio detailatuaren ikuspena</div>
+                <div class="erabiltzaileen-taula-karratua"><strong>Erabiltzaile guztiekin chat orokorra</strong>Intereseko gai 
+                    ezberdinen buruzko eztabaida ezberdinak ikusteko eta hauetan parte hartzeko chat orokorra</div>
+                <div class="erabiltzaileen-taula-karratua"><strong>Faktore zehatz bakoitzaren filtraketa</strong>Dentsitate
+                    mapa bat erabiliz faktore bakoitzaren filtraketa</div>
+                <div class="erabiltzaileen-taula-karratua"><strong>Faktore bakoitzaren eboluzioa urteka</strong>Dentsitate
+                    maparen bidez faktoreen eboluzioaren animazioa</div>
+
+                <div class="erabiltzaileen-taula-karratua erabiltzaileen-taula-karratua-footer"></div>
+            </div>
+            <div class="erabiltzaileen-taula-zutabe">
+                <div class="erabiltzaileen-taula-zutabe-padding">
+                    <div class="erabiltzaileen-taula-karratua erabiltzaileen-taula-karratua-header">
+                        <h2>Gonbidatua</h2>
+                        <p>Bilaketa azkarrak egiteko gomendatzen den erabiltzailea</p>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-check"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-uncheck"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-uncheck"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-uncheck"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-uncheck"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua erabiltzaileen-taula-karratua-footer">
+                        <a href="ikuspegia.html">
+                            <button>Jarraitu gonbidatu bezala</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="erabiltzaileen-taula-zutabe erabiltzaileen-taula-zutabe-popular current">
+                <div class="erabiltzaileen-taula-zutabe-padding">
+                    <div class="erabiltzaileen-taula-karratua erabiltzaileen-taula-karratua-header">
+                        <div class="bc-popular">Popularrena</div>
+                        <h2>Oinarrizko erabiltzailea</h2>
+                        <p>Herrialdeen informazio detailatua ikustea nahi duen erabiltzaileentzako</p>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-check"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-check"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-check"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua bc-desktop">
+                        <div class="bc-uncheck"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua bc-desktop">
+                        <div class="bc-uncheck"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua erabiltzaileen-taula-karratua-footer">
+                        <a href="register.html">
+                            <button>Kontua sortu</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="erabiltzaileen-taula-zutabe">
+                <div class="erabiltzaileen-taula-zutabe-padding">
+                    <div class="erabiltzaileen-taula-karratua erabiltzaileen-taula-karratua-header">
+                        <h2>Premium erabiltzailea</h2>
+                        <p>Bilaketa detailatu eta pertsonalizatuak gure duten erabiltzaileentzako</p>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-check"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-check"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-check"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-check"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua">
+                        <div class="bc-check"></div>
+                    </div>
+                    <div class="erabiltzaileen-taula-karratua erabiltzaileen-taula-karratua-footer">
+                        <a href="register.html">
+                            <button>Premium lortu</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="aboutus-container light">
+        <h2>KONTAKTUA</h2>
+    </section>
+</body>
+<footer>
+    <div class="footer-title">
+        <p>
+            <strong>Wanderlust® 2024</strong>
+        </p>
+    </div>
+    <div class="">
+        <a class="" href="dokumentuak/TÉRMINOS DE USO.pdf">
+            Privacy&amp;Legal &nbsp;&nbsp;
+        </a>
+        <a class="">Contacto</a>
+    </div>
+    <div class="redes">
+        <a href="https://www.instagram.com/">
+            <i class="fa-brands fa-instagram" style="color:black" aria-hidden="true"></i>
+        </a>
+        <a href="https://www.tiktok.com/">
+            <i class="fa-brands fa-tiktok" style="color:black" aria-hidden="true"></i>
+        </a>
+        <a href="https://www.twitter.com/">
+            <i class="fa-brands fa-twitter" style="color:black" aria-hidden="true"></i>
+        </a>
+        <a href="https://www.facebook.com/">
+            <i class="fa-brands fa-facebook" style="color:black" aria-hidden="true"></i>
+        </a>
+    </div>
+</footer>
+
+</html>
