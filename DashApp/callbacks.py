@@ -5,6 +5,7 @@ import numpy as np
 from utils import parse_contents
 import pandas as pd
 
+
 def register_callbacks(app):
     @app.callback(Output("user-type-store", "data"), [Input("url", "href")])
     def store_user_type(href):
@@ -13,58 +14,6 @@ def register_callbacks(app):
         user_type = href.split("user_type=")[1] if "user_type=" in href else 0
         return int(user_type)
 
-    @app.callback(
-        [
-            Output("upload-row", "style"),
-            Output("visualization-row", "style"),
-            Output("series-row", "style"),
-            Output("dropdown-row", "style"),
-            Output("colorscale-row", "style"),
-            Output("country-row", "style"),
-        ],
-        [Input("user-type-store", "data"), Input("visualization-selector", "value")],
-    )
-    def toggle_elements(user_type, visualization_type):
-        if user_type == 1:
-            if visualization_type == "chart":
-                return {}, {}, {}, {}, {}, {}
-            else:
-                return {}, {}, {}, {}, {}, {"display": "none"}
-        return {"display": "none"}, {"display": "none"}, {"display": "none"}, {"display": "none"}, {"display": "none"}, {"display": "none"}
-
-    @app.callback(
-        Output("series-selector", "options"),
-        [Input("upload-data", "contents")],
-        [State("upload-data", "filename")]
-    )
-    def update_series_dropdown(contents, filename):
-        if contents is None:
-            return []
-
-        df = parse_contents(contents, filename)
-        if df is None or 'Series' not in df.columns:
-            return []
-
-        series = df['Series'].unique()
-        options = [{"label": s, "value": s} for s in series]
-        return options
-
-    @app.callback(
-        Output("country-selector", "options"),
-        [Input("upload-data", "contents")],
-        [State("upload-data", "filename")]
-    )
-    def update_country_selector(contents, filename):
-        if contents is None:
-            return []
-
-        df = parse_contents(contents, filename)
-        if df is None or 'Country' not in df.columns:
-            return []
-
-        countries = df['Country'].unique()
-        options = [{"label": country, "value": country} for country in countries]
-        return options
 
     @app.callback(
         Output("map-graph", "figure"),
@@ -81,16 +30,21 @@ def register_callbacks(app):
     def update_map(
         contents, selected_series, colorscale, visualization_type, selected_countries, user_type, filename
     ):
-        if user_type == 0:
+        if user_type == 0 or contents is None or selected_series is None:
             # Mostrar mapa básico para usuarios no logueados
             df = pd.read_csv(
-                "DashApp/data/countries.csv"
-            )  # Archivo CSV con información básica de países
+                "/data/countries.csv"
+            )
+            if(df.isnull):
+                print("Hola")
+            
+            print(df.head())
+            # Archivo CSV con información básica de países
             fig = px.choropleth(
                 df,
-                locations="Country",
+                locations="country",
                 locationmode="country names",
-                hover_name="Country",
+                hover_name="country",
                 projection="natural earth",
                 title="Mapa interactivo de países",
             )
