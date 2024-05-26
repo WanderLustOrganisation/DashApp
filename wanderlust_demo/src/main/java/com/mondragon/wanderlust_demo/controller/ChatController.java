@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.mondragon.wanderlust_demo.services.ErabiltzaileaService;
+import com.mondragon.wanderlust_demo.services.MezuaService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -20,16 +21,21 @@ public class ChatController {
     ErabiltzaileaService erabiltzaileaService;
 
     @Autowired
-    public ChatController(ErabiltzaileaService erabiltzaileaService) 
+    MezuaService mezuaService;
+
+    @Autowired
+    public ChatController(ErabiltzaileaService erabiltzaileaService, MezuaService mezuaService) 
     {
         this.erabiltzaileaService = erabiltzaileaService;
+        this.mezuaService = mezuaService;
     }
 
-        @GetMapping("/chat")
+    @GetMapping("/chat")
     public ModelAndView getIndex(Model model, HttpServletRequest request){
         HttpSession session = request.getSession();
         String emaitza;
         if(session.getAttribute(ERABILTZAILEA) != null){
+            model.addAttribute("mezuak", mezuaService.getMezuak());
             emaitza = "chat";
         }else{
             emaitza = "/login";

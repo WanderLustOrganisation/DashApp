@@ -34,7 +34,7 @@ import com.mondragon.wanderlust_demo.model.Erabiltzailea;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private static final String[] ENDPOINTS_WHITELIST = { "/", "/register", "/ikuspegia", "/aboutus", "/login", "/logout", "/css/**", "/js/**", "/images/**", "/videos/**", "/sass/**", "/locale/**", "/user/edit/**", "/webjars/**"};
+    private static final String[] ENDPOINTS_WHITELIST = { "/", "/register", "/ikuspegia", "/aboutus", "/login", "/logout", "/css/**", "/js/**", "/images/**", "/videos/**", "/webjars/**"};
     private static final String LOGIN_URL = "/login";
     private static final String LOGIN_FAIL_URL = LOGIN_URL + "?error";
     private static final String DEFAULT_SUCCESS_URL = "/";
@@ -67,8 +67,7 @@ public class WebSecurityConfig {
             .formLogin((form) -> form
 				.loginPage("/login")
 				.permitAll()
-                .defaultSuccessUrl("/ikuspegia", true)
-                .successHandler(authenticationSuccessHandler())
+                .defaultSuccessUrl("/", true)
             )
             .logout((logout) -> logout
                 .logoutSuccessUrl("/")
@@ -76,25 +75,5 @@ public class WebSecurityConfig {
             );
     
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new CustomAuthenticationSuccessHandler();
-    }
-
-    public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
-        @Override
-        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                            Authentication authentication) throws IOException, ServletException {
-            HttpSession session = request.getSession();
-            User user = (User) authentication.getPrincipal();
-            Erabiltzailea erabiltzailea = erabiltzaileaService.getErabiltzaileaByUsername(user.getUsername());
-            session.setAttribute("erabiltzailea", erabiltzailea);
-
-
-            getRedirectStrategy().sendRedirect(request, response, "/ikuspegia");
-        }
     }
 }

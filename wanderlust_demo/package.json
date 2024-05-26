@@ -1,0 +1,15 @@
+{
+  "name": "wanderlust_demo",
+  "version": "1.0.0",
+  "main": "chat.js",
+  "dependencies": {
+    "ws": "^8.17.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
