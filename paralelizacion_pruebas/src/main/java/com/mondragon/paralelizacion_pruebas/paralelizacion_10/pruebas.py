@@ -13,11 +13,9 @@ def notify_master(num_slaves, topic, fecha_inicial, fecha_final):
         print(stdout_output)
         print(stderr_output)
         
-        if result.returncode == 0:
+        if stderr_output == "":
             return True
         else:
-            stderr_output = result.stderr.decode() 
-            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")           
             # Check if the error is a connection error
             if "SQLNonTransientConnectionException" in stderr_output and "Read timed out" in stderr_output:
                 print("Detected connection error, retrying...")
@@ -28,7 +26,7 @@ def main():
     fecha_intermedia = datetime.datetime.strptime("1995-01-01", "%Y-%m-%d")
     fecha_limite = datetime.datetime.strptime("2024-01-01", "%Y-%m-%d")
 
-    for i in range(2, 5):
+    for i in range(0, 5):
         fecha_intermedia = datetime.datetime.strptime("1995-01-01", "%Y-%m-%d")
         while fecha_intermedia < fecha_limite:
             fecha_intermedia_str = fecha_intermedia.strftime("%Y-%m-%d")
