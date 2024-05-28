@@ -238,7 +238,7 @@ nav ul li:hover a, nav ul li:active a, nav ul li:focus a{
 
 .content {
     position: relative;
-    height: calc(100vh - 80px - 40px);
+    height: calc(100vh - 80px);
     overflow: hidden;
     background-color: rgba(255, 255, 255, 0.6);
 }
