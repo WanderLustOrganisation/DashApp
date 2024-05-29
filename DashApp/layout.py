@@ -1,6 +1,12 @@
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import pandas as pd
+import dash  # Added this line to import the dash module
+
+# Load the dataset once at the start
+df_master = pd.read_parquet("DashApp/data/master.parquet")
+first_series = df_master['Series'].unique()[0] if 'Series' in df_master.columns else None
 
 # Definición de constantes
 INIT_MODAL_HEADER_FONT_GENERAL = 'Arial'
@@ -16,7 +22,7 @@ INIT_LINE_MODAL_W = '1000px'
 
 # Función para crear el modal del gráfico de líneas
 def create_dash_layout_linegraph_modal():
-    m = dbc.Modal(
+    return dbc.Modal(
         [
             dbc.ModalHeader(
                 html.H1(
@@ -95,11 +101,10 @@ def create_dash_layout_linegraph_modal():
         size="xl",
         style={"max-width": "none", "width": INIT_LINE_MODAL_W}
     )
-    return m
 
 # Función para crear el modal de comparación de países
 def create_dash_layout_comparison_modal():
-    m = dbc.Modal(
+    return dbc.Modal(
         [
             dbc.ModalHeader("Country Comparison"),
             dbc.ModalBody(
@@ -122,121 +127,64 @@ def create_dash_layout_comparison_modal():
                             ),
                         ]),
                     ]),
-                    html.Br(),
-                    dbc.Table(id='comparison-table', bordered=True, hover=True, responsive=True, striped=True)
+                    dcc.Graph(
+                        id='comparison-graph',
+                        animate=False,
+                        style={"backgroundColor": "#1a2d46", 'color': '#ffffff', 'height': INIT_LINE_H},
+                        config={'displayModeBar': False},
+                    ),
                 ]),
             ),
-            dbc.ModalFooter(
-                dbc.Button("Close", id="modal-comparison-close", className="mr-1")
-            ),
+            dbc.ModalFooter([
+                dbc.Button("Close", id="modal-comparison-close", className="mr-1", size=INIT_BUTTON_SIZE),
+            ]),
         ],
         id="dbc-modal-comparison",
         centered=True,
-        size="lg"
+        size="xl",
+        style={"max-width": "none", "width": INIT_LINE_MODAL_W}
     )
-    return m
 
-# Layout de la aplicación Dash
-layout = dbc.Container([
-    dcc.Location(id='url', refresh=False),
-    dcc.Store(id='user-type-store'),
-    dbc.Row([
-        dbc.Col([
-            html.H1("Mapa interactivo de población por país")
-        ], width=12)
-    ]),
-    dbc.Row([
-        dbc.Col([
-            dcc.Upload(
-                id='upload-data',
-                children=html.Div(['Drag and Drop or ', html.A('Select a File')]),
-                style={
-                    'width': '100%',
-                    'height': '60px',
-                    'lineHeight': '60px',
-                    'borderWidth': '1px',
-                    'borderStyle': 'dashed',
-                    'borderRadius': '5px',
-                    'textAlign': 'center',
-                    'margin': '10px'
-                },
-                multiple=False
-            )
-        ], width=12)
-    ], id='upload-row', style={'display': 'none'}),
-    dbc.Row([
-        dbc.Col([
+# Layout principal de la aplicación
+layout = html.Div([
+    html.Header([
+        html.Nav([
             dcc.Dropdown(
-                id='visualization-selector',
-                options=[
-                    {'label': 'Map', 'value': 'map'},
-                    {'label': 'Chart', 'value': 'chart'}
-                ],
-                value='map',
-                placeholder='Select visualization type',
-                style={'width': '100%'}
-            )
-        ], width=12)
-    ], id='visualization-row', style={'display': 'none'}),
-    dbc.Row([
-        dbc.Col([
+                id="choose-category-dropdown",
+                options=[],  # Will be populated dynamically
+                placeholder="Choose Category",
+                searchable=True,
+                style={"width": "1000px", "display": "inline-block", "margin-right": "10px"},
+                value="default_category"  # Set a default category value
+            ),
             dcc.Dropdown(
-                id='series-selector',
-                placeholder='Select data series',
-                style={'width': '100%'}
-            )
-        ], width=12)
-    ], id='series-row', style={'display': 'none'}),
+                id="choose-country-dropdown",
+                options=[],  # Will be populated dynamically
+                placeholder="Choose Country",
+                searchable=True,
+                style={"width": "300px", "display": "inline-block"},
+            ),
+        ], className="navbar navbar-expand-lg navbar-light bg-light")
+    ], style={"position": "fixed", "width": "100%", "zIndex": 1000, "top": 0}),
+    dcc.Store(id="user-type-store"),
+    dcc.Location(id="url", refresh=False),
     dbc.Row([
         dbc.Col([
-            dcc.Dropdown(
-                id='column-selector',
-                placeholder='Select column to plot',
-                style={'width': '100%'}
-            )
-        ], width=12)
-    ], id='dropdown-row', style={'display': 'none'}),
-    dbc.Row([
+            dcc.Graph(
+                id="map-graph",
+                style={"height": "90vh"}, 
+                config={"responsive": True},
+            ),
+        ], width=7),
         dbc.Col([
-            dcc.Dropdown(
-                id='colorscale-selector',
-                options=[
-                    {'label': 'Viridis', 'value': 'Viridis'},
-                    {'label': 'Cividis', 'value': 'Cividis'},
-                    {'label': 'Blues', 'value': 'Blues'},
-                    {'label': 'Greens', 'value': 'Greens'},
-                    {'label': 'Inferno', 'value': 'Inferno'},
-                    {'label': 'Magma', 'value': 'Magma'},
-                    {'label': 'Plasma', 'value': 'Plasma'},
-                    {'label': 'Turbo', 'value': 'Turbo'},
-                    {'label': 'YlGnBu', 'value': 'YlGnBu'},
-                ],
-                value='Plasma',
-                placeholder='Select colorscale',
-                style={'width': '100%'}
-            )
-        ], width=12)
-    ], id='colorscale-row', style={'display': 'none'}),
-    dbc.Row([
-        dbc.Col([
-            dcc.Loading(
-                id='loading',
-                type='default',
-                children=dcc.Graph(id='map-graph', style={'height': '80vh'})
-            )
-        ], width=9),
-        dbc.Col([
-            dcc.Checklist(
-                id='country-selector',
-                options=[],
-                value=['Spain', 'United States', 'Argentina'],
-                style={'height': '80vh', 'overflowY': 'auto'}
-            )
-        ], width=3, id='country-row', style={'display': 'none'})
-    ]),
-    html.Div(id='reload-div'),
-    dbc.Button("Show Line Graph", id="open-linegraph-modal", color="primary", className="mr-1"),  # Botón para abrir el modal
-    dbc.Button("Show Country Comparison", id="open-comparison-modal", color="primary", className="mr-1"),  # New button
-    create_dash_layout_linegraph_modal(),  # Añadir el modal al layout
-    create_dash_layout_comparison_modal()  # New comparison modal
-], fluid=True)
+            html.Div(id='country-info', style={"height": "100vh", "backgroundColor": "#FFFFFF"}),  # Container for displaying country data
+            dbc.Button("See More", id="see-more-btn", style={"display": "none"}),  # Button to see more details
+        ], width=4),
+    ], style={"height": "100vh", "width": "100vw", "position": "relative", "top": "58px",  "left": 0, "--bs-gutter-x": "0"}),  # Adjusted top to start below the header
+    create_dash_layout_linegraph_modal(),
+    create_dash_layout_comparison_modal(),
+    html.Div([
+        dbc.Button("Show Line Graph", id="show-line-graph-btn", className="mr-2"),
+        dbc.Button("Show Country Comparison", id="show-country-comparison-btn", className="mr-2"),
+    ], style={"position": "fixed", "bottom": "10px", "width": "100%", "text-align": "center"})
+])
