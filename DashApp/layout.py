@@ -18,22 +18,13 @@ INIT_LOADER_TYPE = 'circle'
 INIT_LOADER_CHART_COMPONENT_COLOR = '#515A5A'
 INIT_LINE_H = '80vh'
 INIT_MODAL_FOOTER_FONT_SIZE = '14px'
-INIT_LINE_MODAL_W = '1000px'
+INIT_LINE_MODAL_W = '100%'
 
 # Función para crear el modal del gráfico de líneas
 def create_dash_layout_linegraph_modal():
     return dbc.Modal(
         [
-            dbc.ModalHeader(
-                html.H1(
-                    id="line-graph-modal-title",
-                    style={
-                        "fontFamily": INIT_MODAL_HEADER_FONT_GENERAL,
-                        "fontSize": INIT_MODAL_HEADER_FONT_SIZE,
-                        "fontWeight": INIT_MODAL_HEADER_FONT_WEIGHT
-                    },
-                ),
-            ),
+            dbc.ModalHeader("Line Graph"),
             dbc.ModalBody(
                 html.Div([
                     dbc.Row([
@@ -45,28 +36,7 @@ def create_dash_layout_linegraph_modal():
                                 id="line-graph-dropdown-countries",
                                 multi=True,
                                 placeholder='Select countries',
-                            ),
-                            dbc.Button(
-                                "Select all countries",
-                                outline=True,
-                                color="secondary",
-                                id="linegraph-allcountries-button",
-                                style={"marginLeft": 0, 'marginTop': 10, "marginBottom": 0, 'display': 'inline-block', 'opacity': INIT_BUTTON_OPACITY},
-                                size=INIT_BUTTON_SIZE
-                            ),
-                            dbc.Button(
-                                "Remove all countries",
-                                outline=True,
-                                color="secondary",
-                                id="linegraph-nocountries-button",
-                                style={"marginLeft": 10, 'marginTop': 10, "marginBottom": 0, 'display': 'inline-block', 'opacity': INIT_BUTTON_OPACITY},
-                                size=INIT_BUTTON_SIZE
-                            ),
-                            dbc.Tooltip(
-                                "Only for the brave!",
-                                target='linegraph-allcountries-button',
-                                placement='bottom',
-                            ),
+                            )
                         ]),
                         dbc.Col([
                             html.H5("Change datasets"),
@@ -99,10 +69,9 @@ def create_dash_layout_linegraph_modal():
         id="dbc-modal-line",
         centered=True,
         size="xl",
-        style={"max-width": "none", "width": INIT_LINE_MODAL_W}
+        style={"max-width": "none", "width": INIT_LINE_MODAL_W, "margin": "0 auto"}
     )
 
-# Función para crear el modal de comparación de países
 def create_dash_layout_comparison_modal():
     return dbc.Modal(
         [
@@ -113,26 +82,22 @@ def create_dash_layout_comparison_modal():
                         dbc.Col([
                             html.H5("Select first country"),
                             dcc.Dropdown(
-                                options=[],  # Will be populated dynamically
+                                options=[],
                                 id="comparison-dropdown-country1",
                                 placeholder='Select first country',
                             ),
+                            html.Div(id='country-info-1'),
                         ]),
                         dbc.Col([
                             html.H5("Select second country"),
                             dcc.Dropdown(
-                                options=[],  # Will be populated dynamically
+                                options=[],
                                 id="comparison-dropdown-country2",
                                 placeholder='Select second country',
                             ),
+                            html.Div(id='country-info-2'),
                         ]),
                     ]),
-                    dcc.Graph(
-                        id='comparison-graph',
-                        animate=False,
-                        style={"backgroundColor": "#1a2d46", 'color': '#ffffff', 'height': INIT_LINE_H},
-                        config={'displayModeBar': False},
-                    ),
                 ]),
             ),
             dbc.ModalFooter([
@@ -142,7 +107,7 @@ def create_dash_layout_comparison_modal():
         id="dbc-modal-comparison",
         centered=True,
         size="xl",
-        style={"max-width": "none", "width": INIT_LINE_MODAL_W}
+        style={"max-width": "none", "width": INIT_LINE_MODAL_W, "margin": "0 auto"}
     )
 
 # Layout principal de la aplicación
@@ -151,40 +116,43 @@ layout = html.Div([
         html.Nav([
             dcc.Dropdown(
                 id="choose-category-dropdown",
-                options=[],  # Will be populated dynamically
+                options=[], 
                 placeholder="Choose Category",
                 searchable=True,
-                style={"width": "1000px", "display": "inline-block", "margin-right": "10px"},
-                value="default_category"  # Set a default category value
+                style={"flex": "0 0 calc(60% - 10px)", "width": "100%"},
+                value="default_category"  
             ),
             dcc.Dropdown(
                 id="choose-country-dropdown",
                 options=[],  # Will be populated dynamically
                 placeholder="Choose Country",
                 searchable=True,
-                style={"width": "300px", "display": "inline-block"},
+                style={"flex": "0 0 calc(40% - 10px)", "width": "100%"},
             ),
-        ], className="navbar navbar-expand-lg navbar-light bg-light")
+        ], className="navbar navbar-expand-lg navbar-light bg-light", style={"padding":"10px 20px", "gap":"20px"})
     ], style={"position": "fixed", "width": "100%", "zIndex": 1000, "top": 0}),
-    dcc.Store(id="user-type-store"),
-    dcc.Location(id="url", refresh=False),
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(
-                id="map-graph",
-                style={"height": "90vh"}, 
-                config={"responsive": True},
-            ),
-        ], width=7),
-        dbc.Col([
-            html.Div(id='country-info', style={"height": "100vh", "backgroundColor": "#FFFFFF"}),  # Container for displaying country data
-            dbc.Button("See More", id="see-more-btn", style={"display": "none"}),  # Button to see more details
-        ], width=4),
-    ], style={"height": "100vh", "width": "100vw", "position": "relative", "top": "58px",  "left": 0, "--bs-gutter-x": "0"}),  # Adjusted top to start below the header
-    create_dash_layout_linegraph_modal(),
-    create_dash_layout_comparison_modal(),
+    
     html.Div([
-        dbc.Button("Show Line Graph", id="show-line-graph-btn", className="mr-2"),
-        dbc.Button("Show Country Comparison", id="show-country-comparison-btn", className="mr-2"),
-    ], style={"position": "fixed", "bottom": "10px", "width": "100%", "text-align": "center"})
+        dcc.Store(id="user-type-store"),
+        dcc.Location(id="url", refresh=False),
+        dbc.Row([
+            dbc.Col([
+                dcc.Graph(
+                    id="map-graph",
+                    style={"height": "90vh"}, 
+                    config={"responsive": True},
+                ),
+            ], style={"flex": "0 0 80%", "box-sizing": "border-box"}),
+            dbc.Col([
+                html.Div(id='country-info', style={"backgroundColor": "#FFFFFF"}), 
+                dbc.Button("See More", id="see-more-btn", style={"display": "none"}),  
+                create_dash_layout_linegraph_modal(),
+                create_dash_layout_comparison_modal(),
+                html.Div([
+                    dbc.Button("Show Line Graph", id="show-line-graph-btn", className="mr-2"),
+                    dbc.Button("Show Country Comparison", id="show-country-comparison-btn", className="mr-2"),
+                ], style={"display": "flex", "flex-direction": "column", "gap":"8px", "margin-top": "auto", "text-align": "center"})
+            ], style={"padding": "2%", "flex": "0 0 20%", "box-sizing": "border-box", "display": "flex", "flex-direction": "column"}),
+        ], style={"--bs-gutter-x": "0"}),  
+    ], id="content", style={"padding-top": "56px", "height": "calc(100% - 58px)", "width": "100%", "overflow": "hidden"})
 ])

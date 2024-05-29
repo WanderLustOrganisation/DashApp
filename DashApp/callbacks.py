@@ -208,3 +208,122 @@ def register_callbacks(app):
         else:
             return layout
 
+    # Callbacks for the line graph modal
+    @app.callback(
+        [Output("line-graph-dropdown-countries", "options"),
+        Output("line-graph-dropdown-dataset", "options")],
+        [Input("user-type-store", "data")]
+    )
+    def update_line_graph_dropdowns(user_type):
+        if df_master is None:
+            return [], []
+
+        countries = df_master['Country'].unique()
+        country_options = [{"label": "All", "value": "all"}] + [{"label": country, "value": country} for country in countries]
+
+        datasets = df_master['Series'].unique()
+        dataset_options = [{"label": dataset, "value": dataset} for dataset in datasets]
+
+        return country_options, dataset_options
+    
+    @app.callback(
+        Output("line-graph-dropdown-countries", "value"),
+        [Input("line-graph-dropdown-countries", "options"),
+        Input("line-graph-dropdown-countries", "value")]
+    )
+    def update_line_graph_dropdown_countries(options, value):
+        #SOLUCIONAR ESTO!!!! - QUE CUANDO ALL ESTE SELECCIONADO QUITE LOS DEMAS COUNTRIES ANTERIORES PERO QUE DEJE PONER POSTERIORES
+        if "all" in value:
+            # If "all" is selected, deselect other options
+            if len(value) > 1:
+                return ["all"]
+            else:
+                return ["all"]
+        else:
+            # If "all" is not selected but other options are, ensure "all" is not in the list
+            return [val for val in value if val != "all"]
+
+
+    @app.callback(
+        Output("line-graph", "figure"),
+        [Input("line-graph-dropdown-countries", "value"),
+        Input("line-graph-dropdown-dataset", "value")]
+    )
+    def update_line_graph(countries, dataset):
+        if not countries or not dataset:
+            return {}
+
+        if "all" in countries:
+            df = df_master[df_master['Series'] == dataset]
+        else:
+            df = df_master[(df_master['Country'].isin(countries)) & (df_master['Series'] == dataset)]
+
+        if df.empty:
+            return {}
+
+        fig = px.line(df, x="Year", y="Value", color="Country", title=f"{dataset} over time")
+
+        fig.update_layout(
+            template="plotly_dark",
+            title={
+                'text': f"{dataset} over time",
+                'y': 0.9,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'
+            },
+            xaxis_title="Year",
+            yaxis_title=dataset,
+        )
+
+        return fig
+
+    @app.callback(
+        [Output('comparison-dropdown-country1', 'options'),
+        Output('comparison-dropdown-country2', 'options')],
+        [Input('url', 'pathname')]
+    )
+    def set_country_options(pathname):
+        country_options = [{'label': country, 'value': country} for country in df_master['Country'].unique()]
+        return country_options, country_options
+
+
+    # Callback to display country information for the first dropdown
+    @app.callback(
+        Output("country-info-1", "children"),
+        [Input("comparison-dropdown-country1", "value")]
+    )
+    def display_country_info_1(selected_country):
+        if not selected_country:
+            return ""
+
+        country_info = df_master[df_master['Country'] == selected_country].iloc[0]
+
+        info = html.Div([
+            html.H4(country_info['Country']),
+            html.P(f"Population: {country_info.get('Population', 'N/A')}"),
+            html.P(f"GDP: {country_info.get('GDP', 'N/A')}"),
+            # Add more fields as necessary
+        ])
+
+        return info
+
+    # Callback to display country information for the second dropdown
+    @app.callback(
+        Output("country-info-2", "children"),
+        [Input("comparison-dropdown-country2", "value")]
+    )
+    def display_country_info_2(selected_country):
+        if not selected_country:
+            return ""
+
+        country_info = df_master[df_master['Country'] == selected_country].iloc[0]
+
+        info = html.Div([
+            html.H4(country_info['Country']),
+            html.P(f"Population: {country_info.get('Population', 'N/A')}"),
+            html.P(f"GDP: {country_info.get('GDP', 'N/A')}"),
+            # Add more fields as necessary
+        ])
+
+        return info
