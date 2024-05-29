@@ -42,6 +42,6 @@ public class IkuspegiaController {
         }else{
             mota = "0";
         }
-        return new ModelAndView("redirect:http://localhost:5000/dashboard/?user_type=" + mota);
+        return new ModelAndView("redirect:http://35.185.251.142:5000/dashboard/?user_type=" + mota);
     }
 }
