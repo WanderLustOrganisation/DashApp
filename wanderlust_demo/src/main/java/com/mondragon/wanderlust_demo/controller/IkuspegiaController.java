@@ -30,6 +30,7 @@ public class IkuspegiaController {
     public ModelAndView getIkuspegia(HttpServletRequest request, Model model){
         HttpSession session = request.getSession();
         String mota;
+        int erabiltzaileaID = 0;
         Erabiltzailea erabiltzailea = (Erabiltzailea) session.getAttribute(ERABILTZAILEA);
         if(erabiltzailea != null){
             model.addAttribute("herrialdea", erabiltzailea.getHerrialdea());
@@ -39,9 +40,10 @@ public class IkuspegiaController {
             }else{
                 mota = "1";
             }
+            erabiltzaileaID = erabiltzailea.getErabiltzaileaID();
         }else{
             mota = "0";
         }
-        return new ModelAndView("redirect:http://35.185.251.142:5000/dashboard/?user_type=" + mota);
+        return new ModelAndView("redirect:http://35.185.251.142:5000/dashboard/?user_type=" + mota + "/?user=" + erabiltzaileaID);
     }
 }
