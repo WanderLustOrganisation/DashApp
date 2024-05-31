@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Map</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div id="dash-app"></div>
+    <script>
+        var userType = JSON.parse('{{ user_type | tojson | safe }}');
+        var userTypeStore = document.getElementById('user-type-store');
+        if (userTypeStore) {
+            userTypeStore.data = userType;
+        }
+        window.dash_clientside = Object.assign(window.dash_clientside || {}, {
+            "client": {
+                "update_session_data": function(data) {
+                    return {user_type: userType};
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -112,51 +112,19 @@ def create_dash_layout_comparison_modal():
 
 # Layout principal de la aplicación
 layout = html.Div([
-    html.Header([
-        html.Nav([
-            dcc.Dropdown(
-                id="choose-category-dropdown",
-                options=[], 
-                placeholder="Choose Category",
-                searchable=True,
-                style={"flex": "0 0 calc(60% - 10px)", "width": "100%"},
-                value="Population density"  # Set the default value here
-            ),
-            dcc.Dropdown(
-                id="choose-country-dropdown",
-                options=[],  # Will be populated dynamically
-                placeholder="Choose Country",
-                searchable=True,
-                style={"flex": "0 0 calc(40% - 10px)", "width": "100%"},
-            ),
-        ], className="navbar navbar-expand-lg navbar-light bg-light", style={"padding":"10px 20px", "gap":"20px"})
-    ], style={"position": "fixed", "width": "100%", "zIndex": 1000, "top": 0}),
+    dcc.Store(id="user-type-store"),
+    dcc.Store(id='user'),
+    dcc.Location(id="url", refresh=False),
+    
+    html.Header(id="header", style={"position": "fixed", "width": "100%", "zIndex": 1000, "top": 0}),
     
     html.Div([
-        dcc.Store(id="user-type-store"),
-        dcc.Location(id="url", refresh=False),
-        dbc.Row([
-            dbc.Col([
-                dcc.Graph(
-                    id="map-graph",
-                    style={"height": "90vh"}, 
-                    config={"responsive": True},
-                ),
-            ], style={"flex": "0 0 80%", "box-sizing": "border-box"}),
-            dbc.Col([
-                html.Div(id='country-info', style={"backgroundColor": "#FFFFFF"}), 
-                dbc.Button("See More", id="see-more-btn", style={"display": "none"}),  
-                create_dash_layout_linegraph_modal(),
-                create_dash_layout_comparison_modal(),
-                html.Div([
-                    dbc.Button("Show Line Graph", id="show-line-graph-btn", className="mr-2"),
-                    dbc.Button("Show Country Comparison", id="show-country-comparison-btn", className="mr-2"),
-                ], style={"display": "flex", "flex-direction": "column", "gap":"8px", "margin-top": "auto", "text-align": "center"})
-            ], style={"padding": "2%", "flex": "0 0 20%", "box-sizing": "border-box", "display": "flex", "flex-direction": "column"}),
-        ], style={"--bs-gutter-x": "0"}),  
+        dbc.Row(id="main-row", style={"--bs-gutter-x": "0"}),  
     ], id="content", style={"padding-top": "56px", "height": "calc(100% - 58px)", "width": "100%", "overflow": "hidden"}),
+    
     html.Div(id='page-content'),
     dcc.Store(id='selected-country'),
+    
     dbc.Modal(
         [
             dbc.ModalHeader(dbc.ModalTitle("Country Details")),

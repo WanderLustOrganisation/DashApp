@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 from dash import dcc
 import dash_bootstrap_components as dbc
+import layout as layout
+from database import Database
 
 # Load the dataset once at the start
 df_master = pd.read_parquet("DashApp/data/master.parquet")
@@ -28,7 +30,7 @@ def create_map():
             landcolor="rgb(243, 243, 243)",
             countrycolor="rgb(204, 204, 204)",
             bgcolor="rgba(0,0,0,0)",
-            projection_scale=0.8,  # Adjust this value to zoom out
+            projection_scale=0.8,  
             lonaxis_range=[-180, 180],
             lataxis_range=[-90, 90],
             scope="world",
@@ -46,18 +48,129 @@ def register_callbacks(app):
         user_type = href.split("user_type=")[1] if "user_type=" in href else 0
         return int(user_type)
 
+    @app.callback(Output("user", "data"), [Input("url", "href")])
+    def store_user_id(href):
+        if href is None:
+            return 0  
+        user = href.split("user=")[1] if "user=" in href else 0
+        return int(user)
+        
     @app.callback(
-        Output("choose-category-dropdown", "options"),
+        Output("main-row", "children"),
+        [Input("user-type-store", "data")]
+    )
+    def update_layout(user_type):
+        map_graph_col = dbc.Col([
+            dcc.Graph(
+                id="map-graph",
+                style={"height": "90vh"},
+                config={"responsive": True},
+            ),
+        ], id="map-graph-col", style={"flex": "0 0 80%", "box-sizing": "border-box"})
+        
+        country_info_div = html.Div(id='country-info', style={"backgroundColor": "#FFFFFF"})
+        
+        if user_type == 0:
+            controls_col = dbc.Col([
+                country_info_div
+            ], id="controls-col", style={"padding": "2%", "flex": "0 0 20%", "box-sizing": "border-box", "display": "flex", "flex-direction": "column"})
+        else:
+            controls_col = dbc.Col([
+                country_info_div,
+                dbc.Button("See More", id="see-more-btn", style={"display": "none"}),
+                layout.create_dash_layout_linegraph_modal(),
+                layout.create_dash_layout_comparison_modal(),
+                html.Div([
+                    dbc.Button("Show Line Graph", id="show-line-graph-btn", className="mr-2"),
+                    dbc.Button("Show Country Comparison", id="show-country-comparison-btn", className="mr-2"),
+                ], style={"display": "flex", "flex-direction": "column", "gap": "8px", "margin-top": "auto", "text-align": "center"})
+            ], id="controls-col", style={"padding": "2%", "flex": "0 0 20%", "box-sizing": "border-box", "display": "flex", "flex-direction": "column"})
+        
+        return [map_graph_col, controls_col]
+
+    @app.callback(
+        Output("header", "children"),
+        [Input("user-type-store", "data")]
+    )
+    def update_header(user_type):
+        if user_type == 0:
+            return html.Nav([
+                dcc.Dropdown(
+                    id="choose-country-dropdown",
+                    options=[],  
+                    placeholder="Choose Country",
+                    searchable=True,
+                    style={"flex": "0 0 100%", "width": "100%"},
+                ),
+            ], className="navbar navbar-expand-lg navbar-light bg-light", style={"padding": "10px 20px", "gap": "10px"})
+        else:
+            return html.Nav([
+                dcc.Dropdown(
+                    id="choose-category-dropdown",
+                    options=[], 
+                    placeholder="Choose Category",
+                    searchable=True,
+                    style={"flex": "0 0 calc(50% - (20px/3))", "width": "100%"},
+                ),
+                dcc.Dropdown(
+                    id="choose-country-dropdown",
+                    options=[],  
+                    placeholder="Choose Country",
+                    searchable=True,
+                    style={"flex": "0 0 calc(35% - (20px/3))", "width": "100%"},
+                ),
+                dcc.Dropdown(
+                    id="choose-language-dropdown",
+                    options=[], 
+                    placeholder="Choose Language",
+                    searchable=True,
+                    style={"flex": "0 0 calc(15% - (20px/3))", "width": "100%"},
+                ),
+            ], className="navbar navbar-expand-lg navbar-light bg-light", style={"padding": "10px 20px", "gap": "10px"})
+
+
+    @app.callback(
+        [Output("choose-category-dropdown", "options"),
+        Output("choose-category-dropdown", "value")],
         [Input("user-type-store", "data")]
     )
     def update_choose_category_dropdown(user_type):
         if df_master is None or 'Series' not in df_master.columns:
-            return []
+            return [], None
 
         series = df_master['Series'].unique()
         options = [{"label": serie, "value": serie} for serie in series]
-        return options
+        default_value = "Population density" if "Population density" in series else series[0]  # Set the default value
+        return options, default_value
 
+    # Conexión a la base de datos
+    db = Database(host="localhost", user="user", password="user", database="probak")
+    db.connect()
+
+    @app.callback(
+        [Output("choose-language-dropdown", "options"),
+        Output("choose-language-dropdown", "value")],
+        [Input("user", "data")]
+    )
+    def update_choose_language_dropdown(user):
+        if user == 0:
+            return [], None
+
+        query = f"select hizkuntzak.hizkuntza from hizkuntzak, erabiltzaileen_hizkuntzak where hizkuntzak.hizkuntzaID = erabiltzaileen_hizkuntzak.hizkuntzaID and erabiltzaileen_hizkuntzak.erabiltzaileaID = {user}"
+        results = db.execute_query(query)
+
+        if results is None:
+            return [], None  
+
+        options = [{"label": language, "value": language} for (language,) in results]
+        default_value = results[0][0] if results else None 
+
+        return options, default_value
+    '''
+    @app.server.before_first_request
+    def close_db_connection():
+        db.disconnect()
+    '''
     @app.callback(
         Output("choose-country-dropdown", "options"),
         [Input("user-type-store", "data")]
@@ -114,7 +227,8 @@ def register_callbacks(app):
             color='Normalized_Log',
             hover_name="Country",
             animation_frame="Year",
-            color_continuous_scale="Blues",  # Default colorscale
+            color_continuous_scale="Blues",
+            # color_continuous_scale="Viridis",
             hover_data={"Value": True, "Log_Value": True, "Normalized_Log": False},
             range_color=(0, max_val)
         )
@@ -214,31 +328,13 @@ def register_callbacks(app):
             return [], []
 
         countries = df_master['Country'].unique()
-        country_options = [{"label": "All", "value": "all"}] + [{"label": country, "value": country} for country in countries]
+        country_options = [{"label": country, "value": country} for country in countries]
 
         datasets = df_master['Series'].unique()
         dataset_options = [{"label": dataset, "value": dataset} for dataset in datasets]
 
         return country_options, dataset_options
     
-    @app.callback(
-        Output("line-graph-dropdown-countries", "value"),
-        [Input("line-graph-dropdown-countries", "options"),
-        Input("line-graph-dropdown-countries", "value")]
-    )
-    def update_line_graph_dropdown_countries(options, value):
-        #SOLUCIONAR ESTO!!!! - QUE CUANDO ALL ESTE SELECCIONADO QUITE LOS DEMAS COUNTRIES ANTERIORES PERO QUE DEJE PONER POSTERIORES
-        if "all" in value:
-            # If "all" is selected, deselect other options
-            if len(value) > 1:
-                return ["all"]
-            else:
-                return ["all"]
-        else:
-            # If "all" is not selected but other options are, ensure "all" is not in the list
-            return [val for val in value if val != "all"]
-
-
     @app.callback(
         Output("line-graph", "figure"),
         [Input("line-graph-dropdown-countries", "value"),
@@ -248,10 +344,7 @@ def register_callbacks(app):
         if not countries or not dataset:
             return {}
 
-        if "all" in countries:
-            df = df_master[df_master['Series'] == dataset]
-        else:
-            df = df_master[(df_master['Country'].isin(countries)) & (df_master['Series'] == dataset)]
+        df = df_master[(df_master['Country'].isin(countries)) & (df_master['Series'] == dataset)]
 
         if df.empty:
             return {}
@@ -395,8 +488,4 @@ def register_callbacks(app):
             fig2 = px.bar(df, x='Year', y='Value', title=f'{selected_category} of {country} over time')
 
             return fig1, fig2
-        return {}, {}
-        return {}, {}
-        return {}, {}
-        return {}, {}
         return {}, {}
